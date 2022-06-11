@@ -18,7 +18,16 @@ typedef struct _heap {
     options_e opt;
     heapNode **nodes;
 } Heap;
-int create_heap(uint32_t heap_size);
+
+Heap * create_heap(uint32_t heap_size, options_e opt);
 
 void
 heap_sort(Heap *heap);
+
+void insert (Heap *heap, uint32_t sort_key, 
+                void *object);
+
+heapNode* get(Heap *heap);
+
+void
+print_heap(Heap *heap, uint32_t heap_size);

@@ -1,6 +1,6 @@
 #include "heap.h"
 void
-print_array(Heap *heap, uint32_t heap_size) {
+print_heap(Heap *heap, uint32_t heap_size) {
     int32_t i =0;
     heapNode **nodes = heap->nodes;
     for (i =0; i< heap_size; i++) {
@@ -107,14 +107,16 @@ bubble_up(Heap *heap, uint32_t index) {
 
     
 }
-void insert (Heap *heap, heapNode *value, options_e opt) {
+void insert (Heap *heap, uint32_t sort_key, 
+                void *object) {
     /*insert at the end */
-    if (heap->heap_size >= MAX_HEAP_SIZE) {
+    if (heap->heap_size >= heap->max_heap_size) {
         printf("cannot be inserted, reached max limit");
         return;
     }
 
-    heap->nodes[heap->heap_size] = value;
+    heap->nodes[heap->heap_size]->data_node = object;
+    heap->nodes[heap->heap_size]->sort_key = sort_key;
     heap->heap_size++;
     printf("Inserting value %d, new heap_size %d\n", 
         heap->nodes[heap->heap_size]->sort_key, heap->heap_size);
@@ -137,40 +139,43 @@ heap_sort(Heap *heap) {
     printf("Heap sort of size %d\n", size);
     for(i = 0; i <  size - 1; i++) {
         get(heap);
-    print_array(heap, size);
+    print_heap(heap, size);
     }
 }
 
-int create_heap(uint32_t heap_size)
+
+
+Heap * create_heap(uint32_t max_heap_size, options_e opt)
 {
     int32_t i = 0;
     Heap *heap = malloc(sizeof(Heap));
     if (heap == NULL) {
         printf("Heap creation failed\n");
-        return -1;
+        return NULL;
     }
     memset(heap, 0, sizeof(Heap));
+    heap->opt = opt;
 
-    heap->nodes = (heapNode **)malloc(heap_size * sizeof(heapNode *));
+    heap->nodes = (heapNode **)malloc(max_heap_size * sizeof(heapNode *));
     if (heap->nodes == NULL) {
         printf("Heap node creation failed\n");
         free(heap);
-        return -1;
+        return NULL;
     }
-    for (i = 0; i < heap_size; i++) {
+    for (i = 0; i < max_heap_size; i++) {
         heap->nodes[i] = (heapNode *)malloc(sizeof(heapNode));
         memset(heap->nodes[i], 0, sizeof(heapNode));
     }
-    heap->max_heap_size = heap_size;
+    heap->max_heap_size = max_heap_size;
 
-    printf("heap size %d\n", heap_size);
-    print_array(heap, heap_size);
+    printf("Max heap size %d\n", max_heap_size);
+
+    return heap;
+/*
     for (i = heap_size - 1; i > -1; i--) {
         heapify(heap, i);
     }
-    return heap;
     
-/*
     uint32_t size = 0;
     if (heap_size >= MAX_HEAP_SIZE) {
         return -1;
